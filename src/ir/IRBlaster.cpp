@@ -1,8 +1,12 @@
 #include "IRBlaster.h"
 #include <QDebug>
+#include <QTimer>
 
 #ifdef Q_OS_ANDROID
-#include <QtCore/private/qandroidextras_p.h>
+#include <QCoreApplication>
+#include <QJniEnvironment>
+#include <QJniObject>
+#include <QPermissions>
 #endif
 
 IRBlaster::IRBlaster(QObject *parent) : QObject(parent) {
@@ -12,13 +16,13 @@ IRBlaster::IRBlaster(QObject *parent) : QObject(parent) {
 bool IRBlaster::checkAvailability() {
 #ifdef Q_OS_ANDROID
     // Gọi Android ConsumerIrManager.hasIrEmitter()
-    auto activity = QNativeInterface::QAndroidApplication::context();
+    QJniObject activity(QNativeInterface::QAndroidApplication::context());
 
     // Lấy CONSUMER_IR_SERVICE
-    auto irService = activity.callObjectMethod(
+    QJniObject irService = activity.callObjectMethod(
         "getSystemService",
         "(Ljava/lang/String;)Ljava/lang/Object;",
-        QAndroidJniObject::fromString("consumer_ir").object<jstring>()
+        QJniObject::fromString("consumer_ir").object<jstring>()
     );
 
     if (irService.isValid()) {
@@ -43,8 +47,9 @@ bool IRBlaster::transmit(int frequency, const QVector<int> &pattern) {
 
 #ifdef Q_OS_ANDROID
     // Chuyển QVector<int> → jintArray
-    jintArray jPattern = QAndroidJniEnvironment()->NewIntArray(pattern.size());
-    QAndroidJniEnvironment()->SetIntArrayRegion(
+    QJniEnvironment env;
+    jintArray jPattern = env->NewIntArray(pattern.size());
+    env->SetIntArrayRegion(
         jPattern, 0, pattern.size(),
         reinterpret_cast<const jint*>(pattern.constData())
     );
@@ -56,11 +61,11 @@ bool IRBlaster::transmit(int frequency, const QVector<int> &pattern) {
         jPattern
     );
 
-    QAndroidJniEnvironment()->DeleteLocalRef(jPattern);
+    env->DeleteLocalRef(jPattern);
 
-    bool success = (QAndroidJniEnvironment()->ExceptionOccurred() == nullptr);
-    QAndroidJniEnvironment()->ExceptionClear();
-    return success;
+    // checkAndClearExceptions() trả về true nếu có exception
+    const bool hadException = env.checkAndClearExceptions();
+    return !hadException;
 #else
     // Desktop mock — in ra pattern để debug
     qDebug() << "IR transmit mock — freq:" << frequency
@@ -114,9 +119,9 @@ void IRBlaster::startLearning() {
 
 #ifdef Q_OS_ANDROID
     // Yêu cầu permission RECORD_AUDIO
-    QtAndroidPrivate::requestPermission("android.permission.RECORD_AUDIO")
-        .then([this](QtAndroidPrivate::PermissionResult result) {
-        if (result == QtAndroidPrivate::PermissionResult::Authorized) {
+    qApp->requestPermission(QMicrophonePermission{}, this,
+        [this](const QPermission &permission) {
+        if (permission.status() == Qt::PermissionStatus::Granted) {
             // Bắt đầu capture audio để học IR
             // TODO: implement AudioRecord + FFT decode
             qDebug() << "IR Learning: Audio capture started";

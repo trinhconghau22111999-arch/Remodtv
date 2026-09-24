@@ -22,16 +22,16 @@ Item {
         if (s === "connected") {
             castStatus.text  = "Đã kết nối · Cast"
             castStatus.color = theme.green
-            castInd.state    = "ok"
+            castInd.phase    = "ok"
             progress.value   = hasDial ? 0.6 : 1.0
         } else if (s === "connecting") {
             castStatus.text  = "Đang kết nối..."
             castStatus.color = theme.t2
-            castInd.state    = "spin"
+            castInd.phase    = "spin"
         } else if (s === "error") {
             castStatus.text  = "Không thể kết nối Cast"
             castStatus.color = theme.red
-            castInd.state    = "fail"
+            castInd.phase    = "fail"
         }
     }
 
@@ -40,16 +40,16 @@ Item {
         if (s === "connected") {
             dialStatus.text  = "Đã kết nối · DIAL"
             dialStatus.color = theme.green
-            dialInd.state    = "ok"
+            dialInd.phase    = "ok"
             progress.value   = 1.0
         } else if (s === "connecting") {
             dialStatus.text  = "Đang kết nối..."
             dialStatus.color = theme.t2
-            dialInd.state    = "spin"
+            dialInd.phase    = "spin"
         } else if (s === "error") {
             dialStatus.text  = "Không hỗ trợ DIAL"
             dialStatus.color = theme.t3
-            dialInd.state    = "fail"
+            dialInd.phase    = "fail"
         }
     }
 
@@ -68,8 +68,8 @@ Item {
     Component.onCompleted: {
         remote.connectToDevice(ip, hasCast, hasDial, deviceName)
         // Init UI
-        if (!hasCast) { castStatus.text = "Không hỗ trợ"; castStatus.color = theme.t3; castInd.state = "fail" }
-        if (!hasDial) { dialStatus.text = "Không hỗ trợ"; dialStatus.color = theme.t3; dialInd.state = "fail" }
+        if (!hasCast) { castStatus.text = "Không hỗ trợ"; castStatus.color = theme.t3; castInd.phase = "fail" }
+        if (!hasDial) { dialStatus.text = "Không hỗ trợ"; dialStatus.color = theme.t3; dialInd.phase = "fail" }
         if (hasCast)  progress.value = 0.3
     }
 
@@ -170,37 +170,3 @@ Item {
 }
 
 // Indicator component inline
-component Indicator: Rectangle {
-    id: ind
-    width: 22; height: 22; radius: 11; color: "transparent"
-    property string state: "wait" // wait | spin | ok | fail
-
-    // Spin
-    Rectangle {
-        anchors.fill: parent; radius: parent.radius
-        color: "transparent"
-        border.color: theme.blue; border.width: 2
-        visible: ind.state === "spin"
-        RotationAnimation on rotation {
-            running: ind.state === "spin"
-            from: 0; to: 360; duration: 800; loops: Animation.Infinite
-        }
-    }
-    // OK
-    Rectangle {
-        anchors.fill: parent; radius: parent.radius
-        color: theme.green; visible: ind.state === "ok"
-        Text { anchors.centerIn: parent; text: "✓"; color: "white"; font.pixelSize: 12; font.weight: Font.Bold }
-    }
-    // Wait
-    Rectangle {
-        anchors.fill: parent; radius: parent.radius
-        color: theme.c2; visible: ind.state === "wait"
-    }
-    // Fail
-    Rectangle {
-        anchors.fill: parent; radius: parent.radius
-        color: theme.c2; visible: ind.state === "fail"
-        Text { anchors.centerIn: parent; text: "–"; color: theme.t3; font.pixelSize: 14 }
-    }
-}

@@ -33,7 +33,6 @@ signals:
 private slots:
     void onSsdpResponse();
     void onScanTimeout();
-    void checkCastPort(const QString &ip);
 
 private:
     void sendSsdpDiscover();

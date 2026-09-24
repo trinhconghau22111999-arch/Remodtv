@@ -42,7 +42,7 @@ Item {
                 color: theme.c1; border.color: theme.c2; border.width: 0.5
 
                 RowLayout {
-                    anchors { fill: parent; margins: 12 }; spacing: 10
+                    anchors { fill: parent; margins: 12 } spacing: 10
 
                     // Laptop icon
                     Rectangle {
@@ -130,7 +130,7 @@ Item {
                             color: theme.c2; border.color: theme.c3; border.width: 0.5
 
                             RowLayout {
-                                anchors { fill: parent; margins: 10 }; spacing: 10
+                                anchors { fill: parent; margins: 10 } spacing: 10
                                 Text { text: modelData.browser === "Chrome" ? "🌐" : modelData.browser === "Firefox" ? "🦊" : "🌐"; font.pixelSize: 20 }
                                 ColumnLayout {
                                     Layout.fillWidth: true; spacing: 2
@@ -174,7 +174,7 @@ Item {
                 visible: lounge.connected
 
                 RowLayout {
-                    anchors { fill: parent; margins: 10 }; spacing: 10
+                    anchors { fill: parent; margins: 10 } spacing: 10
                     Rectangle { width: 44; height: 30; radius: 6; color: "#000"
                         Text { anchors.centerIn: parent; text: "▶"; color: theme.red; font.pixelSize: 15 } }
                     ColumnLayout {
@@ -216,7 +216,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true; height: 38; radius: 10
                     color: theme.c1; border.color: theme.c2; border.width: 0.5
-                    RowLayout { anchors { fill: parent; margins: 11 }; spacing: 7
+                    RowLayout { anchors { fill: parent; margins: 11 } spacing: 7
                         Text { text: "🔍"; font.pixelSize: 14 }
                         Text { text: "Tìm & phát trên laptop..."; font.pixelSize: 11; color: theme.t3 }
                     }
@@ -241,14 +241,14 @@ Item {
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
                 visible: lounge.connected
-                LBtn { lbl:"⏮"; sub:"Trước";  onTap: lounge.skipPrev() }
+                LBtn { lbl:"⏮"; sub:"Trước";  onTapped: lounge.skipPrev() }
                 LBtn { id: playB; lbl: root.playing ? "⏸" : "▶"; sub: root.playing ? "Dừng" : "Phát"; accent: true
-                    onTap: { root.playing = !root.playing; root.playing ? lounge.play() : lounge.pause() } }
-                LBtn { lbl:"⏭"; sub:"Tiếp";   onTap: lounge.skipNext() }
+                    onTapped: { root.playing = !root.playing; root.playing ? lounge.play() : lounge.pause() } }
+                LBtn { lbl:"⏭"; sub:"Tiếp";   onTapped: lounge.skipNext() }
                 LBtn {
                     lbl: root.rsIcons[root.rsMode]; sub: root.rsModes[root.rsMode]
                     active: root.rsMode > 0
-                    onTap: {
+                    onTapped: {
                         root.rsMode = (root.rsMode+1)%4
                         var m=["REPEAT_OFF","REPEAT_SINGLE","REPEAT_ALL","SHUFFLE"]
                         lounge.setRepeatMode(m[root.rsMode])
@@ -260,12 +260,12 @@ Item {
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
                 visible: lounge.connected
-                LBtn { lbl:"⏪"; sub:"-10s"; onTap: lounge.seekTo(-10) }
-                LBtn { lbl:"⏩"; sub:"+10s"; onTap: lounge.seekTo(10) }
+                LBtn { lbl:"⏪"; sub:"-10s"; onTapped: lounge.seekTo(-10) }
+                LBtn { lbl:"⏩"; sub:"+10s"; onTapped: lounge.seekTo(10) }
                 LBtn { lbl: root.speeds[root.speedIdx]+"x"; sub:"Tốc độ"
-                    onTap: { root.speedIdx=(root.speedIdx+1)%root.speeds.length; lounge.setPlaybackRate(root.speeds[root.speedIdx]) } }
+                    onTapped: { root.speedIdx=(root.speedIdx+1)%root.speeds.length; lounge.setPlaybackRate(root.speeds[root.speedIdx]) } }
                 LBtn { lbl:"⛶"; sub: root.playing ? "Toàn màn" : "Thu nhỏ"
-                    onTap: lounge.setFullscreen(root.playing) }
+                    onTapped: lounge.setFullscreen(root.playing) }
             }
 
             // Volume
@@ -295,10 +295,10 @@ Item {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
                 visible: lounge.connected
                 LBtn { lbl:"⚙"; sub: root.qualities[root.qualIdx]
-                    onTap: { root.qualIdx=(root.qualIdx+1)%root.qualities.length; lounge.setQuality(root.qualities[root.qualIdx]) } }
-                LBtn { lbl:"CC"; sub:"Phụ đề"; onTap: lounge.setSubtitles(true) }
+                    onTapped: { root.qualIdx=(root.qualIdx+1)%root.qualities.length; lounge.setQuality(root.qualities[root.qualIdx]) } }
+                LBtn { lbl:"CC"; sub:"Phụ đề"; onTapped: lounge.setSubtitles(true) }
                 LBtn { id: likeB; lbl: root.liked ? "♥":"♡"; sub: root.liked ? "Đã thích":"Thích"; active: root.liked
-                    onTap: root.liked = !root.liked }
+                    onTapped: root.liked = !root.liked }
             }
 
             Item { height: 12 }
@@ -307,29 +307,3 @@ Item {
 }
 
 // ── Inline button component ───────────────────────────────────
-component LBtn: Rectangle {
-    id: lb
-    property string lbl:    "▶"
-    property string sub:    ""
-    property bool   accent: false
-    property bool   active: false
-    signal tapped()
-    signal tap()
-    onTap: tapped()
-
-    Layout.fillWidth: true; height: 56; radius: 10
-    color: accent ? Qt.rgba(0.04,0.52,1,0.18) : active ? Qt.rgba(0.19,0.82,0.35,0.12) : theme.c1
-    border.color: accent ? Qt.rgba(0.04,0.52,1,0.35) : active ? Qt.rgba(0.19,0.82,0.35,0.3) : theme.c2
-    border.width: 0.5
-
-    ColumnLayout { anchors.centerIn: parent; spacing: 3
-        Text { Layout.alignment: Qt.AlignHCenter; text: lb.lbl; font.pixelSize: 19
-            color: lb.accent ? theme.blue : lb.active ? theme.green : theme.tx }
-        Text { Layout.alignment: Qt.AlignHCenter; text: lb.sub; font.pixelSize: 9; color: theme.t2 }
-    }
-    MouseArea { anchors.fill: parent; onClicked: lb.tapped() }
-    scale: (containsMouse && pressed) ? 0.94 : 1.0
-    property bool containsMouse: false
-    property bool pressed: false
-    Behavior on scale { NumberAnimation { duration: 80 } }
-}

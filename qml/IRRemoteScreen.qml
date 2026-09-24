@@ -34,7 +34,7 @@ Item {
                 color: theme.c1; border.color: theme.c2; border.width: 0.5
 
                 RowLayout {
-                    anchors { fill: parent; margins: 12 }; spacing: 10
+                    anchors { fill: parent; margins: 12 } spacing: 10
                     Rectangle { width: 34; height: 34; radius: 9; color: "#1a1a1a"
                         Text { anchors.centerIn: parent; text: "📡"; font.pixelSize: 18 } }
                     ColumnLayout {
@@ -69,7 +69,7 @@ Item {
                 visible: !irCtrl.deviceReady
 
                 RowLayout {
-                    anchors { fill: parent; margins: 10 }; spacing: 8
+                    anchors { fill: parent; margins: 10 } spacing: 8
                     Text { text: "📺"; font.pixelSize: 16 }
                     Text { text: "Chọn hãng TV:"; font.pixelSize: 12; color: theme.t2 }
                     ComboBox {
@@ -91,7 +91,7 @@ Item {
                 visible: irCtrl.deviceReady
 
                 RowLayout {
-                    anchors { fill: parent; margins: 10 }; spacing: 8
+                    anchors { fill: parent; margins: 10 } spacing: 8
                     Text { text: "📺 " + irCtrl.brand + " · IR sẵn sàng"; font.pixelSize: 12; color: theme.blue }
                     Item { Layout.fillWidth: true }
                     Text {
@@ -126,11 +126,11 @@ Item {
                     Layout.fillWidth: true; height: 100; radius: 12
                     color: theme.c1; border.color: theme.c2; border.width: 0.5
                     ColumnLayout {
-                        anchors { fill: parent; margins: 8 }; spacing: 5
+                        anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "🔊 Âm lượng"; font.pixelSize: 10; color: theme.t3 }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "＋"; onTap: irCtrl.volumeUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "🔇"; onTap: irCtrl.mute() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "－"; onTap: irCtrl.volumeDown() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "＋"; onTapped: irCtrl.volumeUp() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "🔇"; onTapped: irCtrl.mute() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "－"; onTapped: irCtrl.volumeDown() }
                     }
                 }
 
@@ -139,11 +139,11 @@ Item {
                     Layout.fillWidth: true; height: 100; radius: 12
                     color: theme.c1; border.color: theme.c2; border.width: 0.5
                     ColumnLayout {
-                        anchors { fill: parent; margins: 8 }; spacing: 5
+                        anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "📺 Kênh"; font.pixelSize: 10; color: theme.t3 }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∧"; onTap: irCtrl.channelUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "☰"; onTap: irCtrl.inputSource() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∨"; onTap: irCtrl.channelDown() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∧"; onTapped: irCtrl.channelUp() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "☰"; onTapped: irCtrl.inputSource() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∨"; onTapped: irCtrl.channelDown() }
                     }
                 }
             }
@@ -162,17 +162,17 @@ Item {
             // Nav: Home + Back
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 8; spacing: 5
-                IRBtnWide { lbl: "⌂"; sub: "Home"; onTap: irCtrl.home() }
-                IRBtnWide { lbl: "←"; sub: "Back"; onTap: irCtrl.back() }
+                IRBtnWide { lbl: "⌂"; sub: "Home"; onTapped: irCtrl.home() }
+                IRBtnWide { lbl: "←"; sub: "Back"; onTapped: irCtrl.back() }
             }
 
             // ── Input HDMI ────────────────────────────────────
             SectionLbl { text: "HDMI" }
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
-                IRBtnWide { lbl: "1"; sub: "HDMI 1"; onTap: irCtrl.hdmi(1) }
-                IRBtnWide { lbl: "2"; sub: "HDMI 2"; onTap: irCtrl.hdmi(2) }
-                IRBtnWide { lbl: "3"; sub: "HDMI 3"; onTap: irCtrl.hdmi(3) }
+                IRBtnWide { lbl: "1"; sub: "HDMI 1"; onTapped: irCtrl.hdmi(1) }
+                IRBtnWide { lbl: "2"; sub: "HDMI 2"; onTapped: irCtrl.hdmi(2) }
+                IRBtnWide { lbl: "3"; sub: "HDMI 3"; onTapped: irCtrl.hdmi(3) }
             }
 
             // ── Học mã ────────────────────────────────────────
@@ -245,36 +245,3 @@ Item {
 }
 
 // ── Inline components ─────────────────────────────────────────
-component IRBtn: Rectangle {
-    property string lbl: "▲"; signal tapped()
-    radius: 8; color: ma.pressed ? theme.c3 : theme.c2
-    Behavior on color { ColorAnimation { duration: 80 } }
-    Text { anchors.centerIn: parent; text: parent.lbl; color: parent.ma.pressed ? theme.tx : theme.t2; font.pixelSize: 18 }
-    MouseArea { id: ma; anchors.fill: parent; onClicked: parent.tapped() }
-    scale: ma.pressed ? 0.92 : 1.0
-    Behavior on scale { NumberAnimation { duration: 80 } }
-    signal tap()
-    onTap: tapped()
-}
-
-component IRBtnWide: Rectangle {
-    property string lbl: "⌂"; property string sub: ""; signal tapped()
-    Layout.fillWidth: true; height: 52; radius: 10
-    color: ma2.pressed ? theme.c3 : theme.c1
-    border.color: theme.c2; border.width: 0.5
-    Behavior on color { ColorAnimation { duration: 80 } }
-    ColumnLayout { anchors.centerIn: parent; spacing: 2
-        Text { Layout.alignment: Qt.AlignHCenter; text: parent.lbl; font.pixelSize: 20; color: theme.tx }
-        Text { Layout.alignment: Qt.AlignHCenter; text: parent.sub; font.pixelSize: 9; color: theme.t3 }
-    }
-    MouseArea { id: ma2; anchors.fill: parent; onClicked: parent.tapped() }
-    scale: ma2.pressed ? 0.94 : 1.0
-    Behavior on scale { NumberAnimation { duration: 80 } }
-    signal tap()
-    onTap: tapped()
-}
-
-component SectionLbl: Text {
-    Layout.leftMargin: 14; Layout.topMargin: 14; Layout.bottomMargin: 4
-    font.pixelSize: 10; color: theme.t3; font.letterSpacing: 0.4
-}

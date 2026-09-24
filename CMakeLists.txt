@@ -4,7 +4,7 @@ project(TVRemote VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick Network)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick Network Xml)
 
 qt_standard_project_setup()
 
@@ -44,15 +44,23 @@ qt_add_qml_module(TVRemote
         qml/DPad.qml
         qml/IRRemoteScreen.qml
         qml/LoungeScreen.qml
-        qml/PlaybackBar.qml
-        qml/components/ProtoTag.qml
-        qml/components/DeviceCard.qml
+        qml/Indicator.qml
+        qml/DirButton.qml
+        qml/IRBtn.qml
+        qml/IRBtnWide.qml
+        qml/SectionLbl.qml
+        qml/LBtn.qml
+        qml/Divider.qml
+        qml/SectionLabel.qml
+        qml/RemBtn.qml
+        qml/NavBtn.qml
 )
 
 target_link_libraries(TVRemote PRIVATE
     Qt6::Core
     Qt6::Quick
     Qt6::Network
+    Qt6::Xml
 )
 
 # Android settings
@@ -61,5 +69,12 @@ if(ANDROID)
         QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android"
         QT_ANDROID_TARGET_SDK_VERSION 33
         QT_ANDROID_MIN_SDK_VERSION 26
+    )
+endif()
+
+# Desktop: thư mục module QML "TVRemote/" trùng tên file thực thi -> đặt exe vào bin/
+if(NOT ANDROID)
+    set_target_properties(TVRemote PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
 endif()

@@ -1,6 +1,9 @@
 #pragma once
 #include <QObject>
-#include <QAndroidJniObject>
+#include <QtGlobal>
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#endif
 #include "IRDevice.h"
 
 // IRBlaster — giao tiếp với Android ConsumerIrManager
@@ -41,6 +44,8 @@ private:
     bool m_available = false;
     bool m_learning  = false;
 
+#ifdef Q_OS_ANDROID
     // Android JNI object
-    QAndroidJniObject m_irManager;
+    QJniObject m_irManager;
+#endif
 };

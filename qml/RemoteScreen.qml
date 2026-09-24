@@ -97,7 +97,7 @@ Item {
                 border.color: theme.c2; border.width: 0.5
 
                 RowLayout {
-                    anchors { fill: parent; margins: 10 }; spacing: 10
+                    anchors { fill: parent; margins: 10 } spacing: 10
                     Rectangle { width: 46; height: 30; radius: 6; color: "#000"
                         Text { anchors.centerIn: parent; text: "▶"; color: theme.red; font.pixelSize: 16 } }
                     ColumnLayout {
@@ -132,7 +132,7 @@ Item {
                 Rectangle {
                     Layout.fillWidth: true; height: 38; radius: 10
                     color: theme.c1; border.color: theme.c2; border.width: 0.5
-                    RowLayout { anchors { fill: parent; margins: 11 }; spacing: 7
+                    RowLayout { anchors { fill: parent; margins: 11 } spacing: 7
                         Text { text: "🔍"; font.pixelSize: 14 }
                         Text { text: "Tìm kiếm trên TV..."; font.pixelSize: 11; color: theme.t3 }
                     }
@@ -152,14 +152,14 @@ Item {
             // Row 1: Prev / Play / Next / Loop
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
-                RemBtn { lbl: "⏮"; sub: "Trước";   pTag: "Cast"; onTap: remote.skipPrev() }
+                RemBtn { lbl: "⏮"; sub: "Trước";   pTag: "Cast"; onTapped: remote.skipPrev() }
                 RemBtn { id: playBtn; lbl: root.playing ? "⏸" : "▶"; sub: root.playing ? "Dừng" : "Phát"; pTag: "Cast"; accent: true
-                    onTap: { root.playing = !root.playing; remote.togglePlay() } }
-                RemBtn { lbl: "⏭"; sub: "Tiếp";    pTag: "Cast"; onTap: remote.skipNext() }
+                    onTapped: { root.playing = !root.playing; remote.togglePlay() } }
+                RemBtn { lbl: "⏭"; sub: "Tiếp";    pTag: "Cast"; onTapped: remote.skipNext() }
                 RemBtn {
                     lbl: root.rsIcons[root.rsMode]; sub: root.rsModes[root.rsMode]; pTag: "Cast"
                     active: root.rsMode > 0
-                    onTap: {
+                    onTapped: {
                         root.rsMode = (root.rsMode + 1) % 4
                         var modes = ["REPEAT_OFF","REPEAT_SINGLE","REPEAT_ALL","SHUFFLE"]
                         remote.setRepeat(modes[root.rsMode])
@@ -170,15 +170,15 @@ Item {
             // Row 2: -10s / +10s / Speed / Quality
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 0; spacing: 5
-                RemBtn { lbl: "⏪"; sub: "-10s"; pTag: "Cast"; onTap: remote.seekTo(-10) }
-                RemBtn { lbl: "⏩"; sub: "+10s"; pTag: "Cast"; onTap: remote.seekTo(10) }
+                RemBtn { lbl: "⏪"; sub: "-10s"; pTag: "Cast"; onTapped: remote.seekTo(-10) }
+                RemBtn { lbl: "⏩"; sub: "+10s"; pTag: "Cast"; onTapped: remote.seekTo(10) }
                 RemBtn {
                     lbl: root.speeds[root.speedIdx] + "x"; sub: "Tốc độ"; pTag: "Cast"
-                    onTap: { root.speedIdx = (root.speedIdx+1) % root.speeds.length; remote.setSpeed(root.speeds[root.speedIdx]) }
+                    onTapped: { root.speedIdx = (root.speedIdx+1) % root.speeds.length; remote.setSpeed(root.speeds[root.speedIdx]) }
                 }
                 RemBtn {
                     lbl: "⚙"; sub: root.qualities[root.qualIdx]; pTag: "Cast"
-                    onTap: { root.qualIdx = (root.qualIdx+1) % root.qualities.length; remote.setQuality(root.qualities[root.qualIdx]) }
+                    onTapped: { root.qualIdx = (root.qualIdx+1) % root.qualities.length; remote.setQuality(root.qualities[root.qualIdx]) }
                 }
             }
 
@@ -221,13 +221,13 @@ Item {
             // Nav row: Home / Back / Phụ đề / Thích
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 8; spacing: 5
-                NavBtn { lbl: "⌂"; sub: "Home";    onTap: remote.navHome() }
-                NavBtn { lbl: "←"; sub: "Quay lại"; onTap: remote.navBack() }
-                NavBtn { lbl: "CC"; sub: "Phụ đề"; onTap: remote.setSubtitles(true) }
+                NavBtn { lbl: "⌂"; sub: "Home";    onTapped: remote.navHome() }
+                NavBtn { lbl: "←"; sub: "Quay lại"; onTapped: remote.navBack() }
+                NavBtn { lbl: "CC"; sub: "Phụ đề"; onTapped: remote.setSubtitles(true) }
                 NavBtn {
                     id: likeBtn; lbl: root.liked ? "♥" : "♡"; sub: root.liked ? "Đã thích" : "Thích"
                     active: root.liked
-                    onTap: root.liked = !root.liked
+                    onTapped: root.liked = !root.liked
                 }
             }
 
@@ -245,67 +245,3 @@ Item {
 }
 
 // ── Inline components ─────────────────────────────────────────
-
-component Divider: Rectangle {
-    Layout.fillWidth: true; height: 0.5; color: theme.c2; Layout.topMargin: 6; Layout.bottomMargin: 2
-}
-
-component SectionLabel: Text {
-    Layout.leftMargin: 14; Layout.topMargin: 8; Layout.bottomMargin: 4
-    font.pixelSize: 10; color: theme.t3; font.letterSpacing: 0.4
-}
-
-component RemBtn: Rectangle {
-    id: rb
-    property string lbl:    "▶"
-    property string sub:    ""
-    property string pTag:   ""
-    property bool   accent: false
-    property bool   active: false
-    signal tapped()
-
-    Layout.fillWidth: true; height: 58; radius: 10
-    color: accent ? Qt.rgba(0.04,0.52,1,0.18) : active ? Qt.rgba(0.19,0.82,0.35,0.12) : theme.c1
-    border.color: accent ? Qt.rgba(0.04,0.52,1,0.35) : active ? Qt.rgba(0.19,0.82,0.35,0.3) : theme.c2
-    border.width: 0.5
-
-    // Protocol tag
-    Rectangle {
-        visible: rb.pTag !== ""
-        anchors.top: parent.top; anchors.right: parent.right
-        anchors.topMargin: 4; anchors.rightMargin: 4
-        radius: 4; color: rb.pTag === "Cast" ? Qt.rgba(0.04,0.52,1,0.2) : Qt.rgba(0.75,0.35,0.95,0.2)
-        width: ptxt.width + 8; height: 14
-        Text { id: ptxt; anchors.centerIn: parent; text: rb.pTag; font.pixelSize: 8
-            color: rb.pTag === "Cast" ? theme.blue : theme.purple }
-    }
-
-    ColumnLayout {
-        anchors.centerIn: parent; spacing: 2
-        Text { Layout.alignment: Qt.AlignHCenter; text: rb.lbl; font.pixelSize: 20
-            color: rb.accent ? theme.blue : rb.active ? theme.green : theme.tx }
-        Text { Layout.alignment: Qt.AlignHCenter; text: rb.sub; font.pixelSize: 9; color: theme.t2 }
-    }
-
-    MouseArea { anchors.fill: parent; onClicked: rb.tapped() }
-    scale: (containsPress ?? false) ? 0.94 : 1.0
-    Behavior on scale { NumberAnimation { duration: 80 } }
-    property bool containsPress: false
-}
-
-component NavBtn: Rectangle {
-    id: nb
-    property string lbl: "⌂"
-    property string sub: ""
-    property bool active: false
-    signal tapped()
-
-    Layout.fillWidth: true; height: 54; radius: 10
-    color: active ? Qt.rgba(0.19,0.82,0.35,0.12) : theme.c1
-    border.color: active ? Qt.rgba(0.19,0.82,0.35,0.3) : theme.c2; border.width: 0.5
-    ColumnLayout { anchors.centerIn: parent; spacing: 2
-        Text { Layout.alignment: Qt.AlignHCenter; text: nb.lbl; font.pixelSize: 19; color: nb.active ? theme.green : theme.tx }
-        Text { Layout.alignment: Qt.AlignHCenter; text: nb.sub; font.pixelSize: 9; color: theme.t2 }
-    }
-    MouseArea { anchors.fill: parent; onClicked: nb.tapped() }
-}

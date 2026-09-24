@@ -108,7 +108,7 @@ void CastProtocol::sendMessage(const QByteArray &namespace_, const QJsonObject &
     msg["destinationId"] = "receiver-0";
     msg["namespace"] = QString(namespace_);
     msg["payloadType"] = 0;
-    msg["payloadUtf8"] = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+    msg["payloadUtf8"] = QString::fromUtf8(QJsonDocument(payload).toJson(QJsonDocument::Compact));
 
     QByteArray json = QJsonDocument(msg).toJson(QJsonDocument::Compact);
 
