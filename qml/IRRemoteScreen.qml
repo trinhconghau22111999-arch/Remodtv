@@ -42,7 +42,7 @@ Item {
                         onClicked: root.Window.window.goBack()
                     }
                     Rectangle { width: 34; height: 34; radius: 9; color: "#1a1a1a"
-                        Text { anchors.centerIn: parent; text: "📡"; font.pixelSize: 18 } }
+                        Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 } }
                     ColumnLayout {
                         spacing: 1
                         Text { text: "IR Remote"; font.pixelSize: 14; font.weight: Font.Medium; color: theme.tx }
@@ -114,7 +114,29 @@ Item {
                 width: 72; height: 72; radius: 36
                 color: powerArea.pressed ? Qt.darker(theme.red, 1.3) : theme.red
                 Behavior on color { ColorAnimation { duration: 100 } }
-                Text { anchors.centerIn: parent; text: "⏻"; color: "white"; font.pixelSize: 28 }
+                // Icon nguồn vẽ bằng vector — không phụ thuộc font emoji của máy
+                Item {
+                    anchors.centerIn: parent
+                    width: 26; height: 26
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: width / 2
+                        color: "transparent"
+                        border.color: "white"; border.width: 3
+                    }
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top; anchors.topMargin: -3
+                        width: 8; height: 6
+                        color: powerArea.pressed ? Qt.darker(theme.red, 1.3) : theme.red
+                    }
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top; anchors.topMargin: -3
+                        width: 3; height: 13; radius: 1.5
+                        color: "white"
+                    }
+                }
                 MouseArea { id: powerArea; anchors.fill: parent; onClicked: irCtrl.power() }
                 scale: powerArea.pressed ? 0.92 : 1.0
                 Behavior on scale { NumberAnimation { duration: 80 } }
@@ -135,7 +157,7 @@ Item {
                         anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "🔊 Âm lượng"; font.pixelSize: 10; color: theme.t3 }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "＋"; onTapped: irCtrl.volumeUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "🔇"; onTapped: irCtrl.mute() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "✕"; onTapped: irCtrl.mute() }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "－"; onTapped: irCtrl.volumeDown() }
                     }
                 }
@@ -148,7 +170,7 @@ Item {
                         anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "📺 Kênh"; font.pixelSize: 10; color: theme.t3 }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∧"; onTapped: irCtrl.channelUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "☰"; onTapped: irCtrl.inputSource() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "IN"; onTapped: irCtrl.inputSource() }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∨"; onTapped: irCtrl.channelDown() }
                     }
                 }
@@ -168,7 +190,7 @@ Item {
             // Nav: Home + Back
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 8; spacing: 5
-                IRBtnWide { lbl: "⌂"; sub: "Home"; onTapped: irCtrl.home() }
+                IRBtnWide { lbl: "🏠"; sub: "Home"; onTapped: irCtrl.home() }
                 IRBtnWide { lbl: "←"; sub: "Back"; onTapped: irCtrl.back() }
             }
 
