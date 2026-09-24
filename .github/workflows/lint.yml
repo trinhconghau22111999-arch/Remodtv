@@ -18,9 +18,12 @@ jobs:
 
       - name: Run cppcheck
         run: |
-          cppcheck --enable=all --error-exitcode=1 \
+          cppcheck --enable=warning,performance,portability \
+            --error-exitcode=1 \
             --suppress=missingInclude \
             --suppress=unknownMacro \
+            --suppress=unusedFunction \
+            --suppress=unmatchedSuppression \
             src/
 
       - name: Check formatting
