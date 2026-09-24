@@ -68,7 +68,12 @@ jobs:
 
       # Debug => APK được ký debug tự động, cài được ngay trên điện thoại
       - name: Build APK
-        run: cmake --build build-android --target apk
+        run: |
+          set -o pipefail
+          cmake --build build-android --target apk 2>&1 | tee build.log || {
+            echo "::error title=Build APK failed::$(grep -n -i -E 'error|failed|exception|went wrong|not found|cannot|undefined' build.log | head -c 3500 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')"
+            exit 1
+          }
 
       - name: Locate and rename APK
         run: |
