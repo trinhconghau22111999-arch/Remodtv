@@ -91,6 +91,40 @@ Item {
                 }
             }
 
+            // IR Remote entry point
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.leftMargin: 16; Layout.rightMargin: 16
+                Layout.bottomMargin: 4
+                height: 64
+                radius: theme.radius
+                color: Qt.rgba(1, 0.62, 0.04, 0.08)
+                border.color: Qt.rgba(1, 0.62, 0.04, 0.2)
+                border.width: 0.5
+
+                RowLayout {
+                    anchors { fill: parent; margins: 12 }
+                    spacing: 10
+                    Rectangle {
+                        width: 36; height: 36; radius: 9
+                        color: Qt.rgba(1, 0.62, 0.04, 0.15)
+                        Text { anchors.centerIn: parent; text: "📡"; font.pixelSize: 18 }
+                    }
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        spacing: 2
+                        Text { text: "Điều khiển bằng IR"; font.pixelSize: 13; font.weight: Font.Medium; color: theme.tx }
+                        Text { text: "Dùng hồng ngoại của điện thoại — không cần WiFi"; font.pixelSize: 10; color: theme.t2; wrapMode: Text.Wrap; Layout.fillWidth: true }
+                    }
+                    Text { text: "›"; font.pixelSize: 20; color: theme.orange }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.Window.window.goIR()
+                }
+            }
+
             // Section header
             RowLayout {
                 Layout.fillWidth: true
