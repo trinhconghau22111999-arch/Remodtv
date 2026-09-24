@@ -35,6 +35,12 @@ Item {
 
                 RowLayout {
                     anchors { fill: parent; margins: 12 } spacing: 10
+                    RoundButton {
+                        width: 30; height: 30; radius: 15
+                        background: Rectangle { radius: parent.radius; color: "transparent" }
+                        contentItem: Text { text: "‹"; color: theme.tx; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        onClicked: root.Window.window.goBack()
+                    }
                     Rectangle { width: 34; height: 34; radius: 9; color: "#1a1a1a"
                         Text { anchors.centerIn: parent; text: "📡"; font.pixelSize: 18 } }
                     ColumnLayout {
