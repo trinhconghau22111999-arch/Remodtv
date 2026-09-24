@@ -39,7 +39,7 @@ Item {
                     spacing: 10
 
                     Rectangle { width: 36; height: 36; radius: 9; color: theme.c2
-                        Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 } }
+                        TvIcon { anchors.centerIn: parent; width: 20; height: 20; iconColor: theme.tx } }
 
                     ColumnLayout {
                         spacing: 2
