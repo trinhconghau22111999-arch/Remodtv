@@ -35,7 +35,7 @@ Item {
                     width: 36; height: 36
                     radius: 9
                     color: theme.red
-                    Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 }
+                    TvIcon { anchors.centerIn: parent; width: 20; height: 20; iconColor: "white" }
                 }
                 ColumnLayout {
                     spacing: 1
@@ -108,7 +108,7 @@ Item {
                     Rectangle {
                         width: 36; height: 36; radius: 9
                         color: Qt.rgba(1, 0.62, 0.04, 0.15)
-                        Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 }
+                        TvIcon { anchors.centerIn: parent; width: 20; height: 20; iconColor: theme.orange }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
@@ -176,7 +176,7 @@ Item {
 
                         Rectangle {
                             width: 40; height: 40; radius: 10; color: theme.c2
-                            Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 20 }
+                            TvIcon { anchors.centerIn: parent; width: 20; height: 20; iconColor: theme.tx }
                         }
 
                         ColumnLayout {
