@@ -84,7 +84,7 @@ Item {
                     RoundButton {
                         width: 32; height: 32; radius: 16
                         background: Rectangle { radius: parent.radius; color: "transparent" }
-                        contentItem: Text { text: "⏏"; color: theme.t3; font.pixelSize: 16; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
+                        contentItem: Text { text: "×"; color: theme.t3; font.pixelSize: 18; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                         onClicked: { remote.disconnectAll(); root.Window.window.goConnect() }
                     }
                 }
@@ -221,7 +221,7 @@ Item {
             // Nav row: Home / Back / Phụ đề / Thích
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 8; spacing: 5
-                NavBtn { lbl: "⌂"; sub: "Home";    onTapped: remote.navHome() }
+                NavBtn { lbl: "🏠"; sub: "Home";    onTapped: remote.navHome() }
                 NavBtn { lbl: "←"; sub: "Quay lại"; onTapped: remote.navBack() }
                 NavBtn { lbl: "CC"; sub: "Phụ đề"; onTapped: remote.setSubtitles(true) }
                 NavBtn {
