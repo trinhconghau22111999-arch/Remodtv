@@ -36,6 +36,7 @@ Window {
     Component { id: connectScreen;   ConnectScreen   {} }
     Component { id: connectingScreen; ConnectingScreen {} }
     Component { id: remoteScreen;    RemoteScreen    {} }
+    Component { id: irRemoteScreen;  IRRemoteScreen  {} }
 
     // Hàm chuyển màn hình
     function goConnect()    { stack.replace(connectScreen) }
@@ -46,4 +47,6 @@ Window {
         })
     }
     function goRemote() { stack.replace(remoteScreen) }
+    function goIR()      { stack.push(irRemoteScreen) }
+    function goBack()    { stack.pop() }
 }
