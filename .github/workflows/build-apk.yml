@@ -1,0 +1,185 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # Cho phép chạy thủ công
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-22.04
+
+    env:
+      QT_VERSION: 6.5.3
+      ANDROID_NDK_VERSION: 25.2.9519653
+      ANDROID_BUILD_TOOLS: 33.0.2
+      ANDROID_API: 33
+      ANDROID_MIN_API: 26
+      QT_ANDROID_ABIS: arm64-v8a
+
+    steps:
+
+      # ── 1. Checkout code ────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Cài Java ─────────────────────────────────────────
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # ── 3. Cài Android SDK + NDK ────────────────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK & Build Tools
+        run: |
+          sdkmanager "ndk;${{ env.ANDROID_NDK_VERSION }}"
+          sdkmanager "build-tools;${{ env.ANDROID_BUILD_TOOLS }}"
+          sdkmanager "platforms;android-${{ env.ANDROID_API }}"
+          echo "ANDROID_NDK=$ANDROID_SDK_ROOT/ndk/${{ env.ANDROID_NDK_VERSION }}" >> $GITHUB_ENV
+
+      # ── 4. Cache Qt ─────────────────────────────────────────
+      - name: Cache Qt
+        id: cache-qt
+        uses: actions/cache@v4
+        with:
+          path: ~/Qt
+          key: qt-${{ env.QT_VERSION }}-android-arm64
+
+      # ── 5. Cài Qt for Android ───────────────────────────────
+      - name: Install Qt for Android
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: android
+          arch: android_arm64_v8a
+          dir: ~/Qt
+          modules: 'qtmultimedia'
+          cache: true
+
+      # ── 6. Cài Qt for Linux host (cần để cross-compile) ─────
+      - name: Install Qt for Linux host
+        if: steps.cache-qt.outputs.cache-hit != 'true'
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: linux
+          target: desktop
+          arch: gcc_64
+          dir: ~/Qt
+          cache: true
+
+      # ── 7. Setup Qt env vars ────────────────────────────────
+      - name: Set Qt environment variables
+        run: |
+          echo "QT_HOST_PATH=$HOME/Qt/${{ env.QT_VERSION }}/gcc_64" >> $GITHUB_ENV
+          echo "QT_ANDROID_PATH=$HOME/Qt/${{ env.QT_VERSION }}/android_arm64_v8a" >> $GITHUB_ENV
+          echo "Qt6_DIR=$HOME/Qt/${{ env.QT_VERSION }}/android_arm64_v8a/lib/cmake/Qt6" >> $GITHUB_ENV
+
+      # ── 8. Tạo keystore để ký APK ───────────────────────────
+      - name: Generate debug keystore
+        run: |
+          keytool -genkeypair \
+            -alias tvremote \
+            -keypass android \
+            -keystore $HOME/tvremote-debug.keystore \
+            -storepass android \
+            -dname "CN=TVRemote, O=TVRemote, C=VN" \
+            -validity 10000 \
+            -keyalg RSA \
+            -keysize 2048
+          echo "ANDROID_KEYSTORE=$HOME/tvremote-debug.keystore" >> $GITHUB_ENV
+          echo "ANDROID_KEYSTORE_PASS=android" >> $GITHUB_ENV
+          echo "ANDROID_KEY_ALIAS=tvremote" >> $GITHUB_ENV
+          echo "ANDROID_KEY_PASS=android" >> $GITHUB_ENV
+
+      # (Nếu có keystore thật từ Secrets thì dùng bước này thay thế)
+      # - name: Decode release keystore
+      #   if: github.ref == 'refs/heads/main'
+      #   run: |
+      #     echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > $HOME/release.keystore
+      #     echo "ANDROID_KEYSTORE=$HOME/release.keystore" >> $GITHUB_ENV
+      #     echo "ANDROID_KEYSTORE_PASS=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+      #     echo "ANDROID_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+      #     echo "ANDROID_KEY_PASS=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+
+      # ── 9. Configure CMake ──────────────────────────────────
+      - name: Configure CMake
+        run: |
+          cmake -B build-android \
+            -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK/build/cmake/android.toolchain.cmake \
+            -DANDROID_ABI=${{ env.QT_ANDROID_ABIS }} \
+            -DANDROID_PLATFORM=android-${{ env.ANDROID_MIN_API }} \
+            -DANDROID_NDK=$ANDROID_NDK \
+            -DQt6_DIR=${{ env.Qt6_DIR }} \
+            -DQT_HOST_PATH=${{ env.QT_HOST_PATH }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
+            -DQT_ANDROID_SIGN_APK=ON \
+            -DANDROID_KEYSTORE_PATH=$ANDROID_KEYSTORE \
+            -DANDROID_KEYSTORE_ALIAS=$ANDROID_KEY_ALIAS \
+            -DANDROID_KEYSTORE_STORE_PASS=$ANDROID_KEYSTORE_PASS \
+            -DANDROID_KEYSTORE_KEY_PASS=$ANDROID_KEY_PASS
+
+      # ── 10. Build APK ───────────────────────────────────────
+      - name: Build APK
+        run: cmake --build build-android --target apk --parallel $(nproc)
+
+      # ── 11. Tìm và rename APK ───────────────────────────────
+      - name: Locate and rename APK
+        run: |
+          APK_PATH=$(find build-android -name "*.apk" | head -1)
+          echo "APK_PATH=$APK_PATH" >> $GITHUB_ENV
+          echo "Found APK: $APK_PATH"
+          # Rename có version + commit hash
+          COMMIT=$(echo $GITHUB_SHA | cut -c1-7)
+          NEW_NAME="TVRemote-v1.0-${COMMIT}.apk"
+          cp "$APK_PATH" "$NEW_NAME"
+          echo "APK_NAME=$NEW_NAME" >> $GITHUB_ENV
+
+      # ── 12. Upload APK artifact ─────────────────────────────
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TVRemote-APK
+          path: ${{ env.APK_NAME }}
+          retention-days: 30
+
+      # ── 13. Tạo GitHub Release (chỉ khi push lên main) ──────
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "TV Remote v1.0.${{ github.run_number }}"
+          body: |
+            ## 📺 TV Remote — Dual Protocol
+
+            ### Thay đổi
+            - Commit: ${{ github.sha }}
+            - Branch: ${{ github.ref_name }}
+
+            ### Cài đặt
+            1. Tải file APK bên dưới
+            2. Bật **Cài từ nguồn không rõ** trên điện thoại
+            3. Cài APK
+            4. Bật app → kết nối TV cùng WiFi
+
+            ### TV được hỗ trợ
+            - ✅ Android TV / Google TV
+            - ✅ Chromecast
+            - ✅ Samsung Smart TV (DIAL)
+            - ✅ LG Smart TV (DIAL)
+          files: ${{ env.APK_NAME }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

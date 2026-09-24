@@ -1,0 +1,31 @@
+name: Code Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-cpp:
+    name: C++ Lint
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-tidy
+        run: sudo apt-get install -y clang-tidy cppcheck
+
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=all --error-exitcode=1 \
+            --suppress=missingInclude \
+            --suppress=unknownMacro \
+            src/
+
+      - name: Check formatting
+        run: |
+          sudo apt-get install -y clang-format
+          find src/ -name "*.cpp" -o -name "*.h" | \
+            xargs clang-format --dry-run --Werror --style=file 2>&1 || \
+            echo "⚠️ Format issues found (non-blocking)"

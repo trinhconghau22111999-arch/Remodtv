@@ -1,0 +1,37 @@
+# Build
+build*/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+
+# Qt
+*.user
+*.autosave
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+.qmake.stash
+
+# Android
+android/build/
+android/gradle/
+*.apk
+*.aab
+*.keystore
+!android/res/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
