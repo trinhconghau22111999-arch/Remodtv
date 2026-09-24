@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include "DeviceScanner.h"
 #include "RemoteController.h"
+#include "ir/IRController.h"
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
@@ -13,15 +14,18 @@ int main(int argc, char *argv[]) {
     // Đăng ký C++ types với QML
     qmlRegisterType<DeviceScanner>   ("TVRemote", 1, 0, "DeviceScanner");
     qmlRegisterType<RemoteController>("TVRemote", 1, 0, "RemoteController");
+    qmlRegisterType<IRController>    ("TVRemote", 1, 0, "IRController");
 
     QQmlApplicationEngine engine;
 
     // Global instances
     DeviceScanner    scanner;
     RemoteController remote;
+    IRController      irCtrl;
 
     engine.rootContext()->setContextProperty("scanner", &scanner);
     engine.rootContext()->setContextProperty("remote",  &remote);
+    engine.rootContext()->setContextProperty("irCtrl",  &irCtrl);
 
     const QUrl url(u"qrc:/TVRemote/qml/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
