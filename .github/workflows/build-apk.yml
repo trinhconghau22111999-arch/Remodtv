@@ -32,6 +32,10 @@ jobs:
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKMANAGER" --licenses > /dev/null || true
           "$SDKMANAGER" "platforms;android-33" "build-tools;33.0.2" "ndk;${NDK_VERSION}"
+          # androiddeployqt tự chọn platform mới nhất (android-36) -> aapt2 33.0.2 không đọc được.
+          # Chỉ giữ android-33 để build dùng đúng platform.
+          find "$ANDROID_HOME/platforms" -mindepth 1 -maxdepth 1 ! -name "android-33" -exec rm -rf {} +
+          ls "$ANDROID_HOME/platforms"
 
       # Qt 6 cross-compile cho Android cần cả bản Qt desktop (host) lẫn bản Android
       - name: Install Qt (host, desktop)
