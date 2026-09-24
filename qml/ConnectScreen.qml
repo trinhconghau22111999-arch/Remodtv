@@ -108,7 +108,7 @@ Item {
                     Rectangle {
                         width: 36; height: 36; radius: 9
                         color: Qt.rgba(1, 0.62, 0.04, 0.15)
-                        Text { anchors.centerIn: parent; text: "📡"; font.pixelSize: 18 }
+                        Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 }
                     }
                     ColumnLayout {
                         Layout.fillWidth: true
