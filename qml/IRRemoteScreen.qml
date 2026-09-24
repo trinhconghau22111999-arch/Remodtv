@@ -42,7 +42,7 @@ Item {
                         onClicked: root.Window.window.goBack()
                     }
                     Rectangle { width: 34; height: 34; radius: 9; color: "#1a1a1a"
-                        Text { anchors.centerIn: parent; text: "📺"; font.pixelSize: 18 } }
+                        TvIcon { anchors.centerIn: parent; width: 18; height: 18; iconColor: "white" } }
                     ColumnLayout {
                         spacing: 1
                         Text { text: "IR Remote"; font.pixelSize: 14; font.weight: Font.Medium; color: theme.tx }
@@ -157,7 +157,7 @@ Item {
                         anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "🔊 Âm lượng"; font.pixelSize: 10; color: theme.t3 }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "＋"; onTapped: irCtrl.volumeUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "✕"; onTapped: irCtrl.mute() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; iconShape: "mute"; onTapped: irCtrl.mute() }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "－"; onTapped: irCtrl.volumeDown() }
                     }
                 }
@@ -170,7 +170,7 @@ Item {
                         anchors { fill: parent; margins: 8 } spacing: 5
                         Text { Layout.alignment: Qt.AlignHCenter; text: "📺 Kênh"; font.pixelSize: 10; color: theme.t3 }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∧"; onTapped: irCtrl.channelUp() }
-                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "IN"; onTapped: irCtrl.inputSource() }
+                        IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; iconShape: "input"; onTapped: irCtrl.inputSource() }
                         IRBtn { Layout.fillWidth: true; Layout.fillHeight: true; lbl: "∨"; onTapped: irCtrl.channelDown() }
                     }
                 }
@@ -190,7 +190,7 @@ Item {
             // Nav: Home + Back
             RowLayout {
                 Layout.fillWidth: true; Layout.margins: 14; Layout.topMargin: 8; spacing: 5
-                IRBtnWide { lbl: "🏠"; sub: "Home"; onTapped: irCtrl.home() }
+                IRBtnWide { iconShape: "home"; sub: "Home"; onTapped: irCtrl.home() }
                 IRBtnWide { lbl: "←"; sub: "Back"; onTapped: irCtrl.back() }
             }
 
