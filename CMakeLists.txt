@@ -43,6 +43,7 @@ qt_add_qml_module(TVRemote
         qml/RemoteScreen.qml
         qml/DPad.qml
         qml/IRRemoteScreen.qml
+        qml/TvIcon.qml
         qml/LoungeScreen.qml
         qml/Indicator.qml
         qml/DirButton.qml
